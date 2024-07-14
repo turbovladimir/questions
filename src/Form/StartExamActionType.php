@@ -12,12 +12,6 @@ class StartExamActionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('addetAt', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('points')
-            ->add('questionsOrder')
-            ->add('currentQuestion')
             ->add('userName')
         ;
     }

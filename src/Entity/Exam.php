@@ -14,13 +14,13 @@ class Exam
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $addetAt = null;
+    private ?\DateTimeImmutable $addedAt = null;
 
     #[ORM\Column]
     private ?int $points = null;
 
     #[ORM\Column]
-    private array $questionsOrder = [];
+    private array $orderedQuestionsData = [];
 
     #[ORM\Column]
     private ?int $currentQuestion = null;
@@ -28,19 +28,24 @@ class Exam
     #[ORM\Column(length: 50)]
     private ?string $userName = null;
 
+    public function __construct()
+    {
+        $this->addedAt = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getAddetAt(): ?\DateTimeImmutable
+    public function getAddedAt(): ?\DateTimeImmutable
     {
-        return $this->addetAt;
+        return $this->addedAt;
     }
 
-    public function setAddetAt(\DateTimeImmutable $addetAt): static
+    public function setAddedAt(\DateTimeImmutable $addedAt): static
     {
-        $this->addetAt = $addetAt;
+        $this->addedAt = $addedAt;
 
         return $this;
     }
@@ -57,21 +62,22 @@ class Exam
         return $this;
     }
 
-    public function getQuestionsOrder(): array
+    public function getOrderedQuestionsData(): array
     {
-        return $this->questionsOrder;
+        return $this->orderedQuestionsData;
     }
 
-    public function setQuestionsOrder(array $questionsOrder): static
+
+    public function setOrderedQuestionsData(array $orderedQuestionsData): static
     {
-        $this->questionsOrder = $questionsOrder;
+        $this->orderedQuestionsData = $orderedQuestionsData;
 
         return $this;
     }
 
-    public function getCurrentQuestion(): ?int
+    public function getCurrentQuestionData(): array
     {
-        return $this->currentQuestion;
+        return $this->orderedQuestionsData[$this->currentQuestion] ?? [];
     }
 
     public function setCurrentQuestion(int $currentQuestion): static
