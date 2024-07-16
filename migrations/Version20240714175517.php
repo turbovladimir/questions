@@ -26,7 +26,7 @@ final class Version20240714175517 extends AbstractMigration
         $this->addSql('CREATE TABLE answer (id INT NOT NULL, question_id INT NOT NULL, added_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, answer VARCHAR(255) NOT NULL, is_right_answer BOOLEAN NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_DADD4A251E27F6BF ON answer (question_id)');
         $this->addSql('COMMENT ON COLUMN answer.added_at IS \'(DC2Type:datetime_immutable)\'');
-        $this->addSql('CREATE TABLE exam (id INT NOT NULL, added_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, points INT NOT NULL, ordered_questions_data JSON NOT NULL, current_question INT NOT NULL, user_name VARCHAR(50) NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE exam (id INT NOT NULL, added_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, points INT NOT NULL, ordered_questions_data JSON NOT NULL, current_question_number INT NOT NULL, user_name VARCHAR(50) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('COMMENT ON COLUMN exam.added_at IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('CREATE TABLE question (id INT NOT NULL, added_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, question VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('COMMENT ON COLUMN question.added_at IS \'(DC2Type:datetime_immutable)\'');

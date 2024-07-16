@@ -27,8 +27,10 @@ class Question
     #[ORM\OneToMany(targetEntity: Answer::class, mappedBy: 'question', orphanRemoval: true)]
     private Collection $answers;
 
-    public function __construct()
+    public function __construct(string $text)
     {
+        $this->question = $text;
+        $this->addedAt = new \DateTimeImmutable();
         $this->answers = new ArrayCollection();
     }
 

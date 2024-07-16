@@ -1,9 +1,19 @@
 {% extends 'exam/exam.html.twig' %}
 
-{% block content %}
-    <div>
-        {{ form(form) }}
+{% block examinator %}
+    <div class="" role="alert">
+        <span class="examinator-title">Привет! Давай проверим твои знания? Представься пожалуйста =)</span>
     </div>
-{% endblock %}
 
+{% endblock %}
+{% block user_controls %}
+<div>
+    {{ form_start(form) }}
+    {{ form_row(form.userName) }}
+    <div class="form-group mt-4 btn-group">
+        <button class="btn btn-dark">Начать</button>
+    </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
 

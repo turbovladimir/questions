@@ -1,0 +1,38 @@
+{% extends 'exam/exam.html.twig' %}
+
+{% block examinator %}
+    <div class="" role="alert">
+        <span class="examinator-title">Поздравляю, ты набрал целых <span class="points">{{ exam.points }}</span> балла!</span>
+    </div>
+    <canvas width="320" height="240" id="fireworks-canvas" style="background:#000; border-radius: 10px; margin: 1em"></canvas>
+    <script src="{{ asset('content/js/fireworks.js') }}"></script>
+    <script>
+        window.onload = function () {
+            var firework = JS_FIREWORKS.Fireworks({
+                id : 'fireworks-canvas',
+                hue : 120,
+                particleCount : 50,
+                delay : 0,
+                minDelay : 20,
+                maxDelay : 40,
+                boundaries : { // of respawn and target
+                    top: 50,
+                    bottom: 240,
+                    left: 50,
+                    right: 590
+                },
+                fireworkSpeed : 2,
+                fireworkAcceleration : 1.05,
+                particleFriction : .95,
+                particleGravity : 1.5
+            });
+            firework.start();
+        };
+    </script>
+{% endblock %}
+{% block user_controls %}
+<div>
+    <a href="{{ path('exam_start') }}"><button class="btn btn-dark">Начать заново</button></a>
+</div>
+{% endblock %}
+

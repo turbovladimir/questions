@@ -17,13 +17,13 @@ class Exam
     private ?\DateTimeImmutable $addedAt = null;
 
     #[ORM\Column]
-    private ?int $points = null;
+    private ?int $points = 0;
 
     #[ORM\Column]
     private array $orderedQuestionsData = [];
 
     #[ORM\Column]
-    private ?int $currentQuestion = null;
+    private int $currentQuestionNumber = 0;
 
     #[ORM\Column(length: 50)]
     private ?string $userName = null;
@@ -43,21 +43,14 @@ class Exam
         return $this->addedAt;
     }
 
-    public function setAddedAt(\DateTimeImmutable $addedAt): static
-    {
-        $this->addedAt = $addedAt;
-
-        return $this;
-    }
-
     public function getPoints(): ?int
     {
         return $this->points;
     }
 
-    public function setPoints(int $points): static
+    public function addPoints(int $points): static
     {
-        $this->points = $points;
+        $this->points += $points;
 
         return $this;
     }
@@ -75,18 +68,6 @@ class Exam
         return $this;
     }
 
-    public function getCurrentQuestionData(): array
-    {
-        return $this->orderedQuestionsData[$this->currentQuestion] ?? [];
-    }
-
-    public function setCurrentQuestion(int $currentQuestion): static
-    {
-        $this->currentQuestion = $currentQuestion;
-
-        return $this;
-    }
-
     public function getUserName(): ?string
     {
         return $this->userName;
@@ -97,5 +78,33 @@ class Exam
         $this->userName = $userName;
 
         return $this;
+    }
+
+    /**
+     * @param int $currentQuestionNumber
+     */
+    public function setCurrentQuestionNumber(int $currentQuestionNumber): void
+    {
+        $this->currentQuestionNumber = $currentQuestionNumber;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getCurrentQuestionNumber(): ?int
+    {
+        return $this->currentQuestionNumber;
+    }
+
+    public function nextQuestion() : static
+    {
+        $this->currentQuestionNumber++;
+
+        return $this;
+    }
+
+    public function isFinished() : bool
+    {
+        return $this->currentQuestionNumber === count($this->orderedQuestionsData);
     }
 }
