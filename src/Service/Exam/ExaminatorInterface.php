@@ -9,6 +9,4 @@ interface ExaminatorInterface
     public function registerNewExam(Exam $exam) : void;
 
     public function registerAnswers(array $answerIds, Exam $exam) : void;
-
-    public function getQuestion(Exam $exam) : array;
 }

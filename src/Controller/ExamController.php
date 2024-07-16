@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 #[Route('/exam', name: 'exam_')]
 class ExamController extends AbstractController
@@ -67,7 +68,7 @@ class ExamController extends AbstractController
 
 
         return $this->render('exam/question/show/index.html.twig', [
-            'question_data' => $examinator->getQuestion($exam),
+            'question' => $exam->getQuestionData(),
             'question_number' => $exam->getCurrentQuestionNumber(),
             'form' => $form->createView()
         ]);
@@ -88,7 +89,7 @@ class ExamController extends AbstractController
 
 
         return  $this->render('exam/finish/index.html.twig', [
-            'exam' => $exam
+            'results' => $exam->getResults()
         ]);
     }
 

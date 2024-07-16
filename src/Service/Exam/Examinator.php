@@ -2,20 +2,20 @@
 
 namespace App\Service\Exam;
 
-use App\Entity\Answer;
 use App\Entity\Exam;
-use App\Repository\AnswerRepository;
+use App\Entity\Result;
 use App\Repository\ExamRepository;
 use App\Repository\QuestionRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class Examinator implements ExaminatorInterface
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
         private  QuestionRepository $questionRepository,
-        private AnswerRepository $answerRepository,
-        private ExamRepository $examRepository
+        private ExamRepository $examRepository,
+        private SerializerInterface $serializer
     )
     {
     }
@@ -26,6 +26,7 @@ class Examinator implements ExaminatorInterface
 
         if ($existExam) {
             $this->entityManager->remove($existExam);
+            $this->entityManager->remove($existExam->getResults());
         }
 
         $questions = $this->questionRepository->findAll();
@@ -35,44 +36,39 @@ class Examinator implements ExaminatorInterface
         }
 
         shuffle($questions);
-        $data = [];
+        $ordered = [];
         $questionNumber = 1;
         $exam->setCurrentQuestionNumber($questionNumber);
 
         foreach ($questions as $question) {
-            $ans = $question->getAnswers()
-                ->map(fn(Answer $answer) => [
-                    'id' => $answer->getId(),
-                    'value' => $answer->getAnswer()
-                ])->toArray();
-            shuffle($ans);
-
-            $data[$questionNumber++] = [
-                'question_id' => $question->getId(),
-                'question' => $question->getQuestion(),
-                'answers' => $ans
-            ];
+            $ordered[$questionNumber++] = $this->serializer->normalize($question, context: ['groups' => 'group1']);
         }
 
-        $this->entityManager->persist($exam->setOrderedQuestionsData($data));
+        $this->entityManager->persist($exam->setOrderedQuestionsData($ordered));
         $this->entityManager->flush();
     }
 
     public function registerAnswers(array $answerIds, Exam $exam) : void
     {
-        $rightAnswersCnt = $this->answerRepository->count(['id' => $answerIds, 'isRightAnswer' => true]);
-        $exam
-            ->addPoints($rightAnswersCnt)
-            ->nextQuestion()
-        ;
-        $this->entityManager->persist($exam);
+        $r = new Result();
+        $exam->addResult($r);
+        $hasWrongAnswers = false;
+        $q = $exam->getQuestionData();
+
+        if (empty($answerIds)) {
+            $hasWrongAnswers = true;
+        } else {
+            foreach ($q['answers'] as $answer) {
+                if (!$answer['isRightAnswer'] && in_array($answer['id'], $answerIds)) {
+                    $hasWrongAnswers = true;
+                }
+            }
+        }
+
+        $r->setQuestion($q['question'])
+            ->setFailed($hasWrongAnswers);
+        $this->entityManager->persist($r);
+        $this->entityManager->persist($exam->nextQuestion());
         $this->entityManager->flush();
-    }
-
-    public function getQuestion(Exam $exam) : array
-    {
-        $examData = $exam->getOrderedQuestionsData();
-
-        return $examData[$exam->getCurrentQuestionNumber()];
     }
 }

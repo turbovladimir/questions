@@ -3,7 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\ExamRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 #[ORM\Entity(repositoryClass: ExamRepository::class)]
 class Exam
@@ -17,9 +20,6 @@ class Exam
     private ?\DateTimeImmutable $addedAt = null;
 
     #[ORM\Column]
-    private ?int $points = 0;
-
-    #[ORM\Column]
     private array $orderedQuestionsData = [];
 
     #[ORM\Column]
@@ -28,9 +28,16 @@ class Exam
     #[ORM\Column(length: 50)]
     private ?string $userName = null;
 
+    /**
+     * @var Collection<int, Result>
+     */
+    #[ORM\OneToMany(targetEntity: Result::class, mappedBy: 'exam')]
+    private Collection $results;
+
     public function __construct()
     {
         $this->addedAt = new \DateTimeImmutable();
+        $this->results = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -41,18 +48,6 @@ class Exam
     public function getAddedAt(): ?\DateTimeImmutable
     {
         return $this->addedAt;
-    }
-
-    public function getPoints(): ?int
-    {
-        return $this->points;
-    }
-
-    public function addPoints(int $points): static
-    {
-        $this->points += $points;
-
-        return $this;
     }
 
     public function getOrderedQuestionsData(): array
@@ -100,11 +95,50 @@ class Exam
     {
         $this->currentQuestionNumber++;
 
+        if ($this->currentQuestionNumber > count($this->orderedQuestionsData)) {
+            $this->currentQuestionNumber = 0;
+        }
+
         return $this;
     }
 
     public function isFinished() : bool
     {
-        return $this->currentQuestionNumber === count($this->orderedQuestionsData);
+        return $this->currentQuestionNumber === 0;
+    }
+
+    public function getQuestionData() : array
+    {
+        return $this->orderedQuestionsData[$this->currentQuestionNumber];
+    }
+
+    /**
+     * @return Collection<int, Result>
+     */
+    public function getResults(): Collection
+    {
+        return $this->results;
+    }
+
+    public function addResult(Result $result): static
+    {
+        if (!$this->results->contains($result)) {
+            $this->results->add($result);
+            $result->setExam($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResult(Result $result): static
+    {
+        if ($this->results->removeElement($result)) {
+            // set the owning side to null (unless already changed)
+            if ($result->getExam() === $this) {
+                $result->setExam(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -2,9 +2,34 @@
 
 {% block examinator %}
     <div class="" role="alert">
-        <span class="examinator-title">Поздравляю, ты набрал целых <span class="points">{{ exam.points }}</span> балла!</span>
+        <span class="examinator-title">Результаты:</span>
+        <div class="row row-cols-2 justify-content-center mt-3">
+            <div class="col-auto">
+                <ul class="list-group text-start">
+                    {% for i, result in results %}
+                        <li class="list-group-item"><span>Вопрос #{{ i + 1 }} {{ result.question }}
+                            {% if result.isFailed %}
+                                <span class="fail">Неудача</span>
+                            {% else %}
+                                <span class="pass">Пройден</span>
+                            {% endif %}
+                            </span></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col">
+                <canvas width="640" height="480" id="fireworks-canvas" style="background:#000; border-radius: 10px;"></canvas>
+            </div>
+        </div>
     </div>
-    <canvas width="320" height="240" id="fireworks-canvas" style="background:#000; border-radius: 10px; margin: 1em"></canvas>
+    <style>
+        .pass {
+            color: green;
+        }
+        .fail {
+            color: red;
+        }
+    </style>
     <script src="{{ asset('content/js/fireworks.js') }}"></script>
     <script>
         window.onload = function () {

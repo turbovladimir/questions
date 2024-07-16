@@ -1,19 +1,17 @@
 {% extends 'exam/exam.html.twig' %}
 {% block examinator %}
     <span class="examinator-title">Вопрос #{{ question_number }}:</span><br>
-    <span class="examinator-title">{{ question_data.question }}</span>
+    <span class="examinator-title">{{ question.question }}</span>
 {% endblock %}
 {% block user_controls %}
     <div class="row justify-content-center">
         <div class="col-auto">
             {{ form_start(form) }}
-            {% for answer in question_data.answers %}
-                {% set id =  answer.id %}
-
+            {% for a in question.answers %}
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="{{ answer.id }}" id="{{ answer.id }}" >
-                    <label class="form-check-label" for="{{ answer.id }}">
-                        {{ answer.value }}
+                    <input class="form-check-input" type="checkbox" value="{{ a.id }}" id="{{ a.id }}" >
+                    <label class="form-check-label" for="{{ a.id }}">
+                        {{ a.answer }}
                     </label>
                 </div>
             {% endfor %}
